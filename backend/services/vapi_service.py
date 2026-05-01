@@ -35,24 +35,16 @@ class VAPIService:
             },
             "transcriber": {
                 "provider": "custom-transcriber",
-                "url": self.settings.SARVAM_STT_URL,
-                "headers": {"api-subscription-key": self.settings.SARVAM_API_KEY},
-                "model": "saarika:v2",
-                "language": "hi-IN",
+                "server": {
+                    "url": self.settings.SARVAM_STT_URL,
+                    "headers": {"api-subscription-key": self.settings.SARVAM_API_KEY},
+                },
             },
             "voice": {
                 "provider": "custom-voice",
-                "url": self.settings.SARVAM_TTS_URL,
-                "headers": {"api-subscription-key": self.settings.SARVAM_API_KEY},
-                "body": {
-                    "target_language_code": "hi-IN",
-                    "speaker": self.settings.SARVAM_DEFAULT_VOICE,
-                    "pitch": 0,
-                    "pace": 1.0,
-                    "loudness": 1.5,
-                    "speech_sample_rate": 8000,
-                    "enable_preprocessing": True,
-                    "model": "bulbul:v1",
+                "server": {
+                    "url": self.settings.SARVAM_TTS_URL,
+                    "headers": {"api-subscription-key": self.settings.SARVAM_API_KEY},
                 },
             },
             "serverUrl": f"{self.settings.BACKEND_URL}/webhooks/vapi",
@@ -80,6 +72,17 @@ class VAPIService:
         async with httpx.AsyncClient() as client:
             response = await client.patch(
                 f"{VAPI_BASE_URL}/phone-number/{phone_number_id}",
+                json=payload,
+                headers=self.headers,
+                timeout=30,
+            )
+            response.raise_for_status()
+            return response.json()
+
+    async def update_assistant(self, assistant_id: str, payload: dict) -> dict:
+        async with httpx.AsyncClient() as client:
+            response = await client.patch(
+                f"{VAPI_BASE_URL}/assistant/{assistant_id}",
                 json=payload,
                 headers=self.headers,
                 timeout=30,
