@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pandoc \"/Users/pranav/Desktop/Projects/Project X/PRD.docx\" -o /tmp/prd_output.md)"
+    ]
+  }
+}
